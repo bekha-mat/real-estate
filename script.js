@@ -11,14 +11,13 @@ function calculate() {
     let mortgageRate = parseFloat(document.getElementById('mortgageRate').value) || 0;
     let loanTenure = parseFloat(document.getElementById('loanTenure').value) || 0;
     let rentalIncome = parseFloat(document.getElementById('rentalIncome').value) || 0;
-    let serviceCharge = parseFloat(document.getElementById('serviceCharge').value) || 0;
+    let serviceChargePerSqft = parseFloat(document.getElementById('serviceCharge').value) || 0;
     let adminFee = parseFloat(document.getElementById('adminFee').value) || 0;
     let timePeriod = parseFloat(document.getElementById('timePeriod').value) || 0;
     let appreciationRate = parseFloat(document.getElementById('appreciationRate').value) || 0;
     let marketType = document.getElementById('marketType').value;
 
     let pricePerSqft = propertyPrice / propertySize;
-    let serviceChargePerSqft = serviceCharge / propertySize;
     let annualServiceCharge = serviceChargePerSqft * propertySize;
 
     let downPayment = (downPaymentPercent / 100) * propertyPrice;
