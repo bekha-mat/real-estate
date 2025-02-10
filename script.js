@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function calculate() {
     let propertyPrice = parseFloat(document.getElementById('propertyPrice').value) || 0;
+    let buyerType = document.getElementById('buyerType').value;
     let downPaymentPercent = parseFloat(document.getElementById('downPayment').value) || 0;
     let mortgageRate = parseFloat(document.getElementById('mortgageRate').value) || 0;
     let loanTenure = parseFloat(document.getElementById('loanTenure').value) || 0;
@@ -13,29 +14,29 @@ function calculate() {
     let adminFee = parseFloat(document.getElementById('adminFee').value) || 0;
     let timePeriod = parseFloat(document.getElementById('timePeriod').value) || 0;
     let appreciationRate = parseFloat(document.getElementById('appreciationRate').value) || 0;
+    let marketType = document.getElementById('marketType').value;
 
     let downPayment = (downPaymentPercent / 100) * propertyPrice;
     let mortgageAmount = propertyPrice - downPayment;
     let dldFee = propertyPrice * 0.04;
-    let monthlyRate = (mortgageRate / 100) / 12;
-    let numPayments = loanTenure * 12;
-    let monthlyMortgage = (mortgageAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numPayments));
-    let annualMortgageCost = monthlyMortgage * 12;
+    let totalExpenses = dldFee + adminFee + (serviceCharge * timePeriod);
+    let potentialCapitalAppreciation = propertyPrice * (Math.pow(1 + appreciationRate / 100, timePeriod) - 1);
 
-    document.getElementById('dldFee').value = dldFee.toFixed(2);
+    if (buyerType === "mortgage") {
+        let monthlyRate = (mortgageRate / 100) / 12;
+        let numPayments = loanTenure * 12;
+        let monthlyMortgage = (mortgageAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numPayments));
+        let annualMortgageCost = monthlyMortgage * 12;
+        totalExpenses += annualMortgageCost * timePeriod;
+    }
 
     let totalRentalIncome = rentalIncome * timePeriod;
-    let potentialCapitalAppreciation = propertyPrice * (Math.pow(1 + appreciationRate / 100, timePeriod) - 1);
-    let totalExpenses = dldFee + adminFee + (serviceCharge * timePeriod) + (annualMortgageCost * timePeriod);
     let netProfit = totalRentalIncome + potentialCapitalAppreciation - totalExpenses;
-
     let roi = (netProfit / (downPayment + dldFee + adminFee)) * 100;
     let roe = (netProfit / downPayment) * 100;
 
     let results = [
         { name: "Total Down Payment", value: `AED ${downPayment.toFixed(2)}` },
-        { name: "Mortgage Amount", value: `AED ${mortgageAmount.toFixed(2)}` },
-        { name: "Annual Mortgage Cost", value: `AED ${annualMortgageCost.toFixed(2)}` },
         { name: "DLD Fee (4%)", value: `AED ${dldFee.toFixed(2)}` },
         { name: "Total Rental Income (" + timePeriod + " years)", value: `AED ${totalRentalIncome.toFixed(2)}` },
         { name: "Potential Capital Appreciation", value: `AED ${potentialCapitalAppreciation.toFixed(2)}` },
