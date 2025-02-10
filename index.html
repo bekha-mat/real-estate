@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dubai Real Estate Investment Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        label, input, select, button { display: block; margin: 10px 0; width: 100%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; }
+        button { background-color: #28a745; color: white; padding: 10px; border: none; cursor: pointer; }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Dubai Real Estate Investment Calculator</h2>
+    
+    <label for="propertyPrice">Property Price (AED):</label>
+    <input type="number" id="propertyPrice" placeholder="Enter property price">
+
+    <label for="downPayment">Down Payment (%):</label>
+    <input type="number" id="downPayment" placeholder="Enter down payment percentage">
+
+    <label for="mortgageRate">Mortgage Rate (%):</label>
+    <input type="number" id="mortgageRate" placeholder="Enter mortgage interest rate">
+
+    <label for="loanTenure">Loan Tenure (Years):</label>
+    <input type="number" id="loanTenure" placeholder="Enter loan tenure in years">
+
+    <label for="rentalIncome">Annual Rental Income (AED):</label>
+    <input type="number" id="rentalIncome" placeholder="Enter annual rental income">
+
+    <label for="serviceCharge">Annual Service Charge (AED):</label>
+    <input type="number" id="serviceCharge" placeholder="Enter annual service charge">
+
+    <label for="dldFee">DLD Fee (4% of Property Price):</label>
+    <input type="number" id="dldFee" readonly>
+
+    <label for="adminFee">Admin Fee (AED):</label>
+    <input type="number" id="adminFee" placeholder="Enter admin fee">
+
+    <label for="timePeriod">Investment Period (Years):</label>
+    <input type="number" id="timePeriod" placeholder="Enter number of years">
+
+    <label for="appreciationRate">Expected Appreciation (% per year):</label>
+    <input type="number" id="appreciationRate" placeholder="Enter expected appreciation rate">
+
+    <button onclick="calculate()">Calculate</button>
+    <button onclick="exportToExcel()">Export to Excel</button>
+
+    <h3>Results:</h3>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+    </table>
+</div>
+
+<script>
+    function calculate() {
+        let propertyPrice = parseFloat(document.getElementById('propertyPrice').value) || 0;
+        let downPaymentPercent = parseFloat(document.getElementById('downPayment').value) || 0;
+        let mortgageRate = parseFloat(document.getElementById('mortgageRate').value) || 0;
+        let loanTenure = parseFloat(document.getElementById('loanTenure').value) || 0;
+        let rentalIncome = parseFloat(document.getElementById('rentalIncome').value) || 0;
+        let serviceCharge = parseFloat(document.getElementById('serviceCharge').value) || 0;
+        let adminFee = parseFloat(document.getElementById('adminFee').value) || 0;
+        let timePeriod = parseFloat(document.getElementById('timePeriod').value) || 0;
+        let appreciationRate = parseFloat(document.getElementById('appreciationRate').value) || 0;
+
+        let downPayment = (downPaymentPercent / 100) * propertyPrice;
+        let mortgageAmount = propertyPrice - downPayment;
+        let dldFee = propertyPrice * 0.04;
+        let monthlyRate = (mortgageRate / 100) / 12;
+        let numPayments = loanTenure * 12;
+        let monthlyMortgage = (mortgageAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numPayments));
+        let annualMortgageCost = monthlyMortgage * 12;
+
+        document.getElementById('dldFee').value = dldFee.toFixed(2);
+
+        let totalRentalIncome = rentalIncome * timePeriod;
+        let potentialCapitalAppreciation = propertyPrice * (Math.pow(1 + appreciationRate / 100, timePeriod) - 1);
+        let totalExpenses = dldFee + adminFee + (serviceCharge * timePeriod) + (annualMortgageCost * timePeriod);
+        let netProfit = totalRentalIncome + potentialCapitalAppreciation - totalExpenses;
+
+        let roi = (netProfit / (downPayment + dldFee + adminFee)) * 100;
+        let roe = (netProfit / downPayment) * 100;
+
+        let results = [
+            { name: "Total Down Payment", value: `AED ${downPayment.toFixed(2)}` },
+            { name: "Mortgage Amount", value: `AED ${mortgageAmount.toFixed(2)}` },
+            { name: "Annual Mortgage Cost", value: `AED ${annualMortgageCost.toFixed(2)}` },
+            { name: "DLD Fee (4%)", value: `AED ${dldFee.toFixed(2)}` },
+            { name: "Total Rental Income (" + timePeriod + " years)", value: `AED ${totalRentalIncome.toFixed(2)}` },
+            { name: "Potential Capital Appreciation", value: `AED ${potentialCapitalAppreciation.toFixed(2)}` },
+            { name: "Total Expenses", value: `AED ${totalExpenses.toFixed(2)}` },
+            { name: "Net Profit", value: `AED ${netProfit.toFixed(2)}` },
+            { name: "ROI (%)", value: `${roi.toFixed(2)}%` },
+            { name: "ROE (%)", value: `${roe.toFixed(2)}%` },
+        ];
+
+        let resultsBody = document.getElementById("resultsBody");
+        resultsBody.innerHTML = "";
+        results.forEach(row => {
+            let tr = document.createElement("tr");
+            tr.innerHTML = `<td>${row.name}</td><td>${row.value}</td>`;
+            resultsBody.appendChild(tr);
+        });
+    }
+</script>
+
+</body>
+</html>
