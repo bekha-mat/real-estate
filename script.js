@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function calculate() {
     let propertyPrice = parseFloat(document.getElementById('propertyPrice').value) || 0;
+    let propertySize = parseFloat(document.getElementById('propertySize').value) || 0;
     let buyerType = document.getElementById('buyerType').value;
     let downPaymentPercent = parseFloat(document.getElementById('downPayment').value) || 0;
     let mortgageRate = parseFloat(document.getElementById('mortgageRate').value) || 0;
@@ -16,10 +17,14 @@ function calculate() {
     let appreciationRate = parseFloat(document.getElementById('appreciationRate').value) || 0;
     let marketType = document.getElementById('marketType').value;
 
+    let pricePerSqft = propertyPrice / propertySize;
+    let serviceChargePerSqft = serviceCharge / propertySize;
+    let annualServiceCharge = serviceChargePerSqft * propertySize;
+
     let downPayment = (downPaymentPercent / 100) * propertyPrice;
     let mortgageAmount = propertyPrice - downPayment;
     let dldFee = propertyPrice * 0.04;
-    let totalExpenses = dldFee + adminFee + (serviceCharge * timePeriod);
+    let totalExpenses = dldFee + adminFee + (annualServiceCharge * timePeriod);
     let potentialCapitalAppreciation = propertyPrice * (Math.pow(1 + appreciationRate / 100, timePeriod) - 1);
 
     if (buyerType === "mortgage") {
@@ -38,6 +43,9 @@ function calculate() {
     let results = [
         { name: "Total Down Payment", value: `AED ${downPayment.toFixed(2)}` },
         { name: "DLD Fee (4%)", value: `AED ${dldFee.toFixed(2)}` },
+        { name: "Price per Sqft", value: `AED ${pricePerSqft.toFixed(2)}` },
+        { name: "Service Charge per Sqft", value: `AED ${serviceChargePerSqft.toFixed(2)}` },
+        { name: "Annual Service Charge", value: `AED ${annualServiceCharge.toFixed(2)}` },
         { name: "Total Rental Income (" + timePeriod + " years)", value: `AED ${totalRentalIncome.toFixed(2)}` },
         { name: "Potential Capital Appreciation", value: `AED ${potentialCapitalAppreciation.toFixed(2)}` },
         { name: "Total Expenses", value: `AED ${totalExpenses.toFixed(2)}` },
